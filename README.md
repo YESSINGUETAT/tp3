@@ -552,3 +552,6 @@ Lignes de log confirmant le bon démarrage sur les deux ports :
 ```
 
 Les traces d'exécution complètes et les captures sont conservées dans le dossier [`capture/`](file:///capture/).
+
+#   t p 3  
+ 
