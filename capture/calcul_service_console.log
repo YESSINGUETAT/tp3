@@ -1,0 +1,24 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.9)
+
+2026-11-02T21:48:33.915+01:00  INFO 21072 --- [calcul-service] [           main] c.e.calcul.CalculServiceApplication      : Starting CalculServiceApplication v0.0.1-SNAPSHOT using Java 25.0.4.1 with PID 21072 (C:\Users\Silent\Downloads\tp3-ms\calcul-service\target\calcul-service-0.0.1-SNAPSHOT.jar started by Silent in C:\Users\Silent\Downloads\tp2-ms-master)
+2026-11-02T21:48:33.917+01:00  INFO 21072 --- [calcul-service] [           main] c.e.calcul.CalculServiceApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-11-02T21:48:34.602+01:00  INFO 21072 --- [calcul-service] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8081 (http)
+2026-11-02T21:48:34.616+01:00  INFO 21072 --- [calcul-service] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-02T21:48:34.616+01:00  INFO 21072 --- [calcul-service] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.27]
+2026-11-02T21:48:34.631+01:00  INFO 21072 --- [calcul-service] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 673 ms
+2026-11-02T21:48:34.888+01:00  INFO 21072 --- [calcul-service] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8081 (http) with context path '/'
+2026-11-02T21:48:34.896+01:00  INFO 21072 --- [calcul-service] [           main] c.e.calcul.CalculServiceApplication      : Started CalculServiceApplication in 1.332 seconds (process running for 1.726)
+2026-11-02T21:48:45.865+01:00  INFO 21072 --- [calcul-service] [nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-02T21:48:45.867+01:00  INFO 21072 --- [calcul-service] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-02T21:48:45.867+01:00  INFO 21072 --- [calcul-service] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+[calcul-service] Calcul de produit: 3 * 4
+[calcul-service] Calcul de division: 8 / 0
+[calcul-service] Calcul de produit: 8 * 2

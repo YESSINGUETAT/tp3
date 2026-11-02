@@ -1,0 +1,15 @@
+﻿================================================================================
+CONSOLE 1 : calcul-service (Port 8081)
+================================================================================
+2026-11-02T21:48:33.250+01:00  INFO 21072 --- [calcul-service] [           main] c.e.calcul.CalculServiceApplication      : Starting CalculServiceApplication v0.0.1-SNAPSHOT using Java 25.0.4.1
+2026-11-02T21:48:33.958+01:00  INFO 21072 --- [calcul-service] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8081 (http)
+2026-11-02T21:48:34.888+01:00  INFO 21072 --- [calcul-service] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8081 (http) with context path '/'
+2026-11-02T21:48:34.896+01:00  INFO 21072 --- [calcul-service] [           main] c.e.calcul.CalculServiceApplication      : Started CalculServiceApplication in 1.332 seconds (process running for 1.726)
+
+================================================================================
+CONSOLE 2 : historique-service (Port 8082)
+================================================================================
+2026-11-02T21:46:17.410+01:00  INFO 20468 --- [historique-service] [           main] c.e.h.HistoriqueServiceApplication       : Starting HistoriqueServiceApplication v0.0.1-SNAPSHOT using Java 25.0.4.1
+2026-11-02T21:46:18.014+01:00  INFO 20468 --- [historique-service] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8082 (http)
+2026-11-02T21:46:19.065+01:00  INFO 20468 --- [historique-service] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8082 (http) with context path '/'
+2026-11-02T21:46:19.073+01:00  INFO 20468 --- [historique-service] [           main] c.e.h.HistoriqueServiceApplication       : Started HistoriqueServiceApplication in 1.487 seconds (process running for 1.874)

@@ -1,0 +1,21 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.9)
+
+2026-11-02T21:46:17.952+01:00  INFO 20468 --- [historique-service] [           main] c.e.h.HistoriqueServiceApplication       : Starting HistoriqueServiceApplication v0.0.1-SNAPSHOT using Java 25.0.4.1 with PID 20468 (C:\Users\Silent\Downloads\tp3-ms\historique-service\target\historique-service-0.0.1-SNAPSHOT.jar started by Silent in C:\Users\Silent\Downloads\tp2-ms-master)
+2026-11-02T21:46:17.958+01:00  INFO 20468 --- [historique-service] [           main] c.e.h.HistoriqueServiceApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-11-02T21:46:18.685+01:00  INFO 20468 --- [historique-service] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8082 (http)
+2026-11-02T21:46:18.690+01:00  INFO 20468 --- [historique-service] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-02T21:46:18.695+01:00  INFO 20468 --- [historique-service] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.27]
+2026-11-02T21:46:18.711+01:00  INFO 20468 --- [historique-service] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 697 ms
+2026-11-02T21:46:19.065+01:00  INFO 20468 --- [historique-service] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8082 (http) with context path '/'
+2026-11-02T21:46:19.073+01:00  INFO 20468 --- [historique-service] [           main] c.e.h.HistoriqueServiceApplication       : Started HistoriqueServiceApplication in 1.487 seconds (process running for 1.874)
+2026-11-02T21:47:26.528+01:00  INFO 20468 --- [historique-service] [nio-8082-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-02T21:47:26.528+01:00  INFO 20468 --- [historique-service] [nio-8082-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-02T21:47:26.528+01:00  INFO 20468 --- [historique-service] [nio-8082-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms

@@ -1,0 +1,155 @@
+================================================================================
+TP3 REST : Microservices « Calculatrice » avec Spring Boot
+Réponses aux Questions du TP
+================================================================================
+
+--------------------------------------------------------------------------------
+PARTIE A : DU SERVICE WEB AU MICROSERVICE
+--------------------------------------------------------------------------------
+
+A.4 Questions de conception
+
+1. Dans le TP2, le résultat d'une opération était calculé par un simple appel de méthode. Dans ce TP, il est obtenu par une requête HTTP vers un autre microservice. Citez un avantage et un inconvénient de ce choix.
+Réponse :
+- Avantage : Découplage architectural et scalabilité indépendante ; chaque microservice peut être déployé, mis à l'échelle ou modifié sans impacter directement l'autre.
+- Inconvénient : Surcharge de communication réseau (latence accrue, coût de sérialisation/désérialisation JSON/HTTP) et complexité liée aux pannes partielles du réseau ou du service distant.
+
+2. Si calcul-service est arrêté, quelles requêtes du tableau A.2 continuent de fonctionner ? Lesquelles échouent ?
+Réponse :
+- Requêtes qui continuent de fonctionner : Les requêtes de consultation et de suppression d'opérations existantes (GET /operations, GET /operations/{id}, DELETE /operations/{id}) car elles ne lisent/manipulent que l'état local en mémoire d'historique-service.
+- Requêtes qui échouent : Les calculs directs (GET /calcul/...) car calcul-service est éteint, ainsi que POST /operations et PUT /operations/{id} car ils doivent interroger calcul-service pour obtenir le résultat avant d'enregistrer.
+
+3. Pourquoi les deux microservices ne peuvent-ils pas écouter sur le même port ?
+Réponse :
+Au niveau de la pile réseau de l'OS (TCP/IP), un port d'écoute sur une interface réseau donnée ne peut être alloué qu'à un seul processus à la fois. Deux services tentant de s'attacher au même port déclencheront une erreur de conflit de port (BindException: Address already in use).
+
+4. Quel code de statut HTTP historique-service doit-il renvoyer quand il ne parvient pas à joindre calcul-service ?
+Réponse :
+Il doit renvoyer le code HTTP 503 Service Unavailable (ou 502 Bad Gateway), indiquant au client que le service requis pour effectuer le calcul est temporairement injoignable ou en panne, sans que ce soit une erreur du client ni un bug applicatif interne d'historique-service.
+
+--------------------------------------------------------------------------------
+PARTIE C : PREMIER MICROSERVICE : LA SOMME
+--------------------------------------------------------------------------------
+
+Correspondance avec le TP2 (Tableau page 9) :
+- @RestController : Indique que la classe est un contrôleur REST Spring où les valeurs de retour des méthodes sont automatiquement sérialisées dans le corps de la réponse HTTP.
+- @RequestMapping("/calcul") : Définit le préfixe d'URI de base pour toutes les routes déclarées dans le contrôleur.
+- @GetMapping("/somme") : Associe la méthode à une requête HTTP GET sur le sous-chemin /somme.
+- produces = MediaType.TEXT_PLAIN_VALUE : Précise que le corps de la réponse HTTP renvoyé est au format text/plain.
+- @RequestParam("a") int a : Lie le paramètre 'a' transmis dans la chaîne de requête (query string ?a=...) au paramètre Java et le convertit en entier.
+- ResponseEntity.ok(...) : Construit et retourne une réponse HTTP avec le statut 200 OK et le corps fourni.
+
+Question C.1. Comparez cette URL avec celle du TP2 (http://localhost:8080/RestWebApp/api/calcul/somme?a=2&b=3). Quelles parties ont disparu, et pourquoi ?
+Réponse :
+Le préfixe du fichier WAR (/RestWebApp) et le préfixe d'application JAX-RS (/api) ont disparu. Avec Spring Boot, chaque microservice embarque son propre serveur Tomcat et se déploie à la racine (/), en écoutant directement sur son propre port dédié (8081).
+
+Question C.2. Remplacez GET par POST dans Postman et renvoyez la requête. Quel code de statut obtenez-vous ? Est-ce le même qu'au TP2 ?
+Réponse :
+On obtient le code HTTP 405 Method Not Allowed. Oui, c'est exactement le même code de statut qu'au TP2 (car la route est définie uniquement pour le verbe GET).
+
+--------------------------------------------------------------------------------
+PARTIE D : COMPLÉTER LA CALCULATRICE
+--------------------------------------------------------------------------------
+
+Question D.1. Au TP2, JAX-RS donnait la valeur 0 à un paramètre entier absent et la méthode somme s'exécutait. Que fait Spring dans le même cas ? Laquelle des deux attitudes vous paraît la plus conforme à REST ?
+Réponse :
+Spring rejette immédiatement la requête avec un code HTTP 400 Bad Request, car @RequestParam est requis par défaut. L'attitude de Spring est plus conforme aux principes de REST et de robustesse logicielle, car une requête cliente incomplète doit être signalée en erreur explicite plutôt que d'effectuer silencieusement un calcul avec une valeur par défaut arbitraire.
+
+Question D.2. Avec curl ou Postman, Spring renvoie ses messages d'erreur sous forme d'objet JSON. Quels champs contient-il ?
+Réponse :
+Le corps JSON renvoyé par Spring Boot contient les champs : timestamp (date et heure), status (code d'erreur HTTP numérique, ex: 400), error (description du statut HTTP, ex: "Bad Request") et path (chemin URI de la requête demandée, ex: "/calcul/somme").
+
+Question D.3. Complétez le tableau de correspondance : à quelles annotations JAX-RS correspondent @RequestParam et @PathVariable ? Laquelle utilisera-t-on pour lire l'identifiant dans /operations/{id} ?
+Réponse :
+- @RequestParam correspond à @QueryParam de JAX-RS (paramètres après le ? de l'URL).
+- @PathVariable correspond à @PathParam de JAX-RS (paramètres variables insérés dans le chemin d'URI).
+Pour lire l'identifiant dans /operations/{id}, on utilise l'annotation @PathVariable("id") int id.
+
+--------------------------------------------------------------------------------
+PARTIE E : ÉCHANGER DES DONNÉES EN JSON
+--------------------------------------------------------------------------------
+
+Question E.1. Au TP2, JSON-B avait produit {"a":2,"b":3,"operation":"somme","resultat":5.0}. Les deux textes JSON sont-ils équivalents pour un client ? Qui a effectué la conversion cette fois-ci ?
+Réponse :
+Oui, ils sont rigoureusement équivalents car la norme JSON (RFC 8259) spécifie que l'ordre des paires clé/valeur dans un objet n'a pas de signification sémantique. Dans Spring Boot, c'est la bibliothèque Jackson (intégrée dans le starter Web) qui a effectué la sérialisation automatique.
+
+Question E.2. Pourquoi la seconde requête est-elle refusée, alors que le code de la méthode ne mentionne aucun format ?
+Réponse :
+La requête est refusée avec le statut 406 Not Acceptable en raison de la négociation de contenu (Content Negotiation) : le client a exigé Accept: application/xml, mais Spring Boot ne possède que le convertisseur JSON par défaut et n'a pas de convertisseur XML enregistré dans le classpath. Ne pouvant honorer le format requis, il rejette la demande.
+
+--------------------------------------------------------------------------------
+PARTIE F : SECOND MICROSERVICE : HISTORIQUE-SERVICE
+--------------------------------------------------------------------------------
+
+Question F.1. Pourquoi les lectures continuent-elles de fonctionner alors que calcul-service est arrêté ? Une telle situation était-elle possible au TP2 ?
+Réponse :
+Les requêtes de lecture (GET /operations et GET /operations/{id}) accèdent uniquement aux données stockées localement en mémoire dans historique-service, sans solliciter calcul-service. Au TP2, cela était impossible car tous les modules résidaient dans la même application monolithique : l'arrêt du serveur Tomcat ou du WAR rendait l'intégralité du système indisponible.
+
+Question F.2. Pendant l'arrêt de calcul-service, le client a reçu une réponse 503 en moins d'une seconde. Que se serait-il passé sans le bloc catch (ResourceAccessException e) ?
+Réponse :
+Sans ce bloc catch, l'exception ResourceAccessException levée par RestClient se serait propagée jusqu'au gestionnaire global de Spring MVC, qui aurait répondu par une erreur générique 500 Internal Server Error avec une trace de pile, au lieu d'un code 503 Service Unavailable explicite et standard.
+
+--------------------------------------------------------------------------------
+QUESTIONS DE SYNTHÈSE
+--------------------------------------------------------------------------------
+
+1. Reprenez le tableau A.3 et, pour chaque ligne, indiquez l'étape du TP où vous avez observé la différence.
+- Technologie : Partie B (dépendance Maven Spring Boot) et C.2 (annotations Spring).
+- Découpage : Partie B (création de calcul-service) et Partie F.1 (création de historique-service).
+- Résultat de la construction : Partie B.3 et C.5 (construction d'un JAR exécutable via spring-boot-maven-plugin).
+- Serveur : Partie C.5 (démarrage du Tomcat embarqué via le jar exécutable).
+- Port : Partie C.4 (calcul-service sur 8081) et F.1 (historique-service sur 8082).
+- Adresse : Partie C.6 et C.7 (disparition de /RestWebApp/api/).
+- Activation : Partie B.4 (classe principale annotée @SpringBootApplication avec main()).
+- Ressource REST : Partie C.2 (@RestController et @RequestMapping).
+- Verbes HTTP : Parties C.2, D.1, F.5, F.8, F.9 (@GetMapping, @PostMapping, @PutMapping, @DeleteMapping).
+- Paramètres : Parties C.2, D.4, F.5 (@RequestParam, @PathVariable, @RequestBody).
+- Réponse HTTP : Parties C.2, D.2, E.4, F.5 (usage de ResponseEntity).
+- Conversion JSON : Parties E.1 et E.2 (sérialisation automatique Jackson).
+- Création des objets : Parties C.1, C.2, F.4, F.5 (injection de dépendances @Service via constructeur).
+- Communication : Parties F.3 et F.5 (appel HTTP distant avec RestClient).
+
+2. Tableau de correspondance complet entre les annotations JAX-RS (TP2) et Spring (TP3) :
+--------------------------------------------------------------------------------
+Rôle                                 | JAX-RS (TP2)          | Spring Boot (TP3)
+--------------------------------------------------------------------------------
+Déclaration du contrôleur / ressource | @Path sur la classe   | @RestController + @RequestMapping
+Méthode HTTP GET                     | @GET                  | @GetMapping
+Méthode HTTP POST                    | @POST                 | @PostMapping
+Méthode HTTP PUT                     | @PUT                  | @PutMapping
+Méthode HTTP DELETE                  | @DELETE               | @DeleteMapping
+Paramètre de requête (?a=2&b=3)      | @QueryParam("a")      | @RequestParam("a")
+Paramètre de chemin ({id})           | @PathParam("id")      | @PathVariable("id")
+Corps de requête JSON                | @Consumes (implicite) | @RequestBody
+Format de réponse produit            | @Produces(...)        | produces = ... (ou par défaut JSON)
+Composant de service injectable      | (aucun / new)         | @Service
+Injection de dépendance              | @Inject               | Constructeur (IoC Spring)
+--------------------------------------------------------------------------------
+
+3. Au TP2, une seule commande (mvn clean package) produisait un fichier .war qu'il fallait ensuite déployer dans Tomcat. Décrivez les commandes nécessaires pour construire et lancer les deux microservices de ce TP sans IntelliJ.
+Réponse :
+Pour construire les deux microservices :
+  cd calcul-service && mvn clean package -DskipTests
+  cd ../historique-service && mvn clean package -DskipTests
+Pour lancer les deux microservices (dans 2 consoles séparées) :
+  Console 1 : java -jar calcul-service/target/calcul-service-0.0.1-SNAPSHOT.jar
+  Console 2 : java -jar historique-service/target/historique-service-0.0.1-SNAPSHOT.jar
+
+4. Un microservice est-il un service web ? Un service web est-il toujours un microservice ? Justifiez à l'aide de ce TP.
+Réponse :
+- Oui, tout microservice communiquant via les technologies web (comme HTTP/REST avec des formats comme JSON) est un service web. C'est le cas de calcul-service et historique-service.
+- Non, un service web n'est pas toujours un microservice. L'application du TP2 (RestWebApp) était un service web REST complet, mais c'était un monolithe regroupant toutes les fonctionnalités dans un seul WAR déployé sur un serveur partagé.
+
+5. Dans ce TP, l'adresse de calcul-service est écrite dans application.properties d'historique-service. Quel problème cela pose-t-il si l'on lance trois exemplaires de calcul-service pour répartir la charge ?
+Réponse :
+L'adresse étant statique (http://localhost:8081), toutes les requêtes seront envoyées exclusivement à cette première instance. historique-service ne peut ni découvrir dynamiquement les autres instances lancées sur d'autres ports/machines, ni répartir la charge (Load Balancing), ni basculer en cas de panne de l'instance 8081.
+
+6. Le principe stateless (sans état) interdit au serveur de mémoriser l'état du client entre deux requêtes. historique-service conserve pourtant la liste des opérations. Expliquez pourquoi cela ne contredit pas ce principe.
+Réponse :
+Le principe stateless interdit de conserver l'état conversationnel ou la session d'un client particulier entre deux requêtes (chaque requête doit être autonome et auto-suffisante). La liste des opérations conservée par historique-service représente l'état des données métier de l'application (l'équivalent d'une table de base de données), et non une session utilisateur.
+
+7. Vous envoyez deux fois la même requête POST /operations, puis deux fois la même requête PUT /operations/1. Comparez l'effet de la répétition dans les deux cas. La réponse est-elle différente de celle du TP2 ?
+Réponse :
+- Répéter POST /operations crée à chaque fois une nouvelle opération avec un nouvel identifiant (ex: ID 1 puis ID 2) ; la méthode n'est pas idempotente.
+- Répéter PUT /operations/1 modifie la même ressource déjà existante (ID 1) en lui réaffectant les mêmes valeurs ; l'état du système reste identique après le second appel (la méthode est idempotente).
+Le comportement et la réponse sont exactement identiques à ceux du TP2.
