@@ -83,3 +83,4 @@ public class CalculController {
         return ResponseEntity.ok(resultat);
     }
 }
+

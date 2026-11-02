@@ -49,3 +49,4 @@ public class Resultat {
         this.resultat = resultat;
     }
 }
+

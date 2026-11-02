@@ -24,3 +24,4 @@ public class Calculatrice {
         return (double) a / b;
     }
 }
+

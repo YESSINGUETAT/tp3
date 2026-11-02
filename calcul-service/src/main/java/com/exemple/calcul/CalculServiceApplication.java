@@ -9,3 +9,4 @@ public class CalculServiceApplication {
         SpringApplication.run(CalculServiceApplication.class, args);
     }
 }
+

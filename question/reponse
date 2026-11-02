@@ -90,7 +90,7 @@ Réponse :
 Sans ce bloc catch, l'exception ResourceAccessException levée par RestClient se serait propagée jusqu'au gestionnaire global de Spring MVC, qui aurait répondu par une erreur générique 500 Internal Server Error avec une trace de pile, au lieu d'un code 503 Service Unavailable explicite et standard.
 
 --------------------------------------------------------------------------------
-QUESTIONS DE SYNTHÈSE
+QUESTIONS DE SYNTHESE
 --------------------------------------------------------------------------------
 
 1. Reprenez le tableau A.3 et, pour chaque ligne, indiquez l'étape du TP où vous avez observé la différence.

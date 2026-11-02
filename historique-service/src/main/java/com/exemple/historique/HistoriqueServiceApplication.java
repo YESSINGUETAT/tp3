@@ -9,3 +9,4 @@ public class HistoriqueServiceApplication {
         SpringApplication.run(HistoriqueServiceApplication.class, args);
     }
 }
+

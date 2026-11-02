@@ -43,3 +43,4 @@ public class OperationService {
         return operations.remove(id); // null si l'identifiant n'existait pas
     }
 }
+
